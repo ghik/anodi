@@ -7,7 +7,8 @@ import sbtide.Keys.ideBasePackages
 
 object Anodi extends ProjectGroup("anodi") {
   object Versions {
-    final val AvsCommons = "2.9.1"
+    final val AvsCommons = "2.9.2"
+    final val Scalatest = "3.2.15"
   }
 
   override def globalSettings: Seq[Def.Setting[_]] = Seq(
@@ -70,14 +71,21 @@ object Anodi extends ProjectGroup("anodi") {
       "-language:higherKinds",
       "-Werror",
       "-Xlint:-missing-interpolator,-adapted-args,-unused,_",
+      "-Yrangepos",
     ),
 
     addCompilerPlugin("com.avsystem.commons" %% "commons-analyzer" % Versions.AvsCommons),
+
+    libraryDependencies ++= Seq(
+      "org.scalatest" %% "scalatest" % Versions.Scalatest % Test,
+    )
   )
 
-  lazy val root: Project = mkRootProject.settings(
+  lazy val root: Project = mkRootProject.dependsOn(macros)
+
+  lazy val macros: Project = mkSubProject.settings(
     libraryDependencies ++= Seq(
-      "com.avsystem.commons" %% "commons-core" % Versions.AvsCommons,
+      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
     ),
   )
 }
