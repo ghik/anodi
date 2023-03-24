@@ -10,7 +10,7 @@ import scala.concurrent.Future
 /**
  * Base trait for classes that define collections of interdependent [[Component]]s.
  */
-trait Components extends ComponentsCompat with ComponentsLowPrio {
+trait Components extends ComponentsCompat {
   protected def componentNamePrefix: String = ""
 
   protected def componentInfo(sourceInfo: SourceInfo): ComponentInfo =
@@ -25,14 +25,4 @@ trait Components extends ComponentsCompat with ComponentsLowPrio {
       .asInstanceOf[AtomicReference[Future[T]]]
     component.cached(cacheStorage, freshInfo)
   }
-
-  // avoids divergent implicit expansion involving `inject`
-  // this is not strictly necessary but makes compiler error messages nicer
-  // i.e. the compiler will emit "could not find implicit value" instead of "divergent implicit expansion"
-  implicit def ambiguousArbitraryComponent1[T]: Component[T] = null
-  implicit def ambiguousArbitraryComponent2[T]: Component[T] = null
-}
-trait ComponentsLowPrio {
-  @compileTimeOnly("implicit Component[T] => implicit T inference only works inside code passed to component/singleton macro")
-  implicit def inject[T](implicit component: Component[T]): T = sys.error("stub")
 }

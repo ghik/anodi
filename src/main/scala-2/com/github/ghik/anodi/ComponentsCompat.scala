@@ -3,9 +3,10 @@ package com.github.ghik.anodi
 import com.github.ghik.anodi.macros.ComponentMacros
 import com.github.ghik.anodi.util.SourceInfo
 
+import scala.annotation.compileTimeOnly
 import scala.concurrent.{ExecutionContext, Future}
 
-trait ComponentsCompat { this: Components =>
+trait ComponentsCompat extends ComponentsLowPrio { this: Components =>
   /**
    * Creates a [[Component]] based on a definition (i.e. a constructor invocation). The definition may refer to
    * other components as dependencies using `.ref`. This macro will transform the definition by extracting dependencies
@@ -47,4 +48,14 @@ trait ComponentsCompat { this: Components =>
   )(implicit
     sourceInfo: SourceInfo
   ): Component[T] = macro ComponentMacros.asyncSingleton[T]
+
+  // avoids divergent implicit expansion involving `inject`
+  // this is not strictly necessary but makes compiler error messages nicer
+  // i.e. the compiler will emit "could not find implicit value" instead of "divergent implicit expansion"
+  implicit def ambiguousArbitraryComponent1[T]: Component[T] = null
+  implicit def ambiguousArbitraryComponent2[T]: Component[T] = null
+}
+trait ComponentsLowPrio { this: Components =>
+  @compileTimeOnly("implicit Component[T] => implicit T inference only works inside code passed to component/singleton macro")
+  implicit def inject[T](implicit component: Component[T]): T = sys.error("stub")
 }

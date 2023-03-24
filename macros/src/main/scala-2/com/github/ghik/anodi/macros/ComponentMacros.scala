@@ -137,36 +137,7 @@ class ComponentMacros(val c: blackbox.Context) {
     ensureRangePositions()
     mkComponent(weakTypeOf[T], sourceInfo, definition, singleton = true, async = true)
   }
-
-  def autoComponent[T: c.WeakTypeTag](definition: Tree)(sourceInfo: Tree): Tree = {
-    ensureRangePositions()
-    val component = mkComponent(weakTypeOf[T], sourceInfo, definition, singleton = false, async = false)
-    q"$AnodiPkg.AutoComponent($component)"
-  }
-
-  def reifyAllSingletons: Tree = {
-    val prefixName = c.freshName(TermName("prefix"))
-    val bufName = c.freshName(TermName("buf"))
-
-    val componentMethods =
-      c.prefix.actualType.members.iterator
-        .filter(s => s.isMethod && !s.isSynthetic).map(_.asMethod)
-        .filter { m =>
-          m.typeParams.isEmpty && m.paramLists.isEmpty &&
-            m.typeSignatureIn(c.prefix.actualType).resultType <:< ComponentTpe
-        }
-        .toList
-
-    q"""
-       val $prefixName = ${c.prefix}
-       val $bufName = new $ScalaPkg.collection.mutable.ListBuffer[$ComponentTpe]
-       def addIfCached(_c: $ComponentTpe): Unit =
-         if(_c.isCached) $bufName += _c
-       ..${componentMethods.map(m => q"addIfCached($prefixName.$m)")}
-       $bufName.result()
-       """
-  }
-
+  
   private final lazy val ownerChain = {
     val sym = c.typecheck(q"val ${c.freshName(TermName(""))} = null").symbol
     Iterator.iterate(sym)(_.owner).takeWhile(_ != NoSymbol).drop(1).toList
