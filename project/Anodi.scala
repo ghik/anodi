@@ -7,7 +7,6 @@ import sbtide.Keys.ideBasePackages
 
 object Anodi extends ProjectGroup("anodi") {
   object Versions {
-    final val AvsCommons = "2.9.2"
     final val Scalatest = "3.2.15"
   }
 
@@ -19,7 +18,8 @@ object Anodi extends ProjectGroup("anodi") {
   )
 
   override def commonSettings: Seq[Def.Setting[_]] = Seq(
-    scalaVersion := "2.13.10",
+    scalaVersion := crossScalaVersions.value.last,
+    crossScalaVersions := Seq("2.13.10", "3.2.2"),
     organization := "com.github.ghik",
     homepage := Some(url("https://github.com/ghik/anodi")),
     ideBasePackages := Seq("com.github.ghik.anodi"),
@@ -70,11 +70,18 @@ object Anodi extends ProjectGroup("anodi") {
       "-language:experimental.macros",
       "-language:higherKinds",
       "-Werror",
-      "-Xlint:-missing-interpolator,-adapted-args,-unused,_",
-      "-Yrangepos",
     ),
 
-    addCompilerPlugin("com.avsystem.commons" %% "commons-analyzer" % Versions.AvsCommons),
+    Compile / scalacOptions ++= (scalaBinaryVersion.value match {
+      case "2.13" => Seq(
+        "-Xlint:-missing-interpolator,-adapted-args,-unused,_",
+        "-Xsource:3",
+        "-Yrangepos",
+      )
+      case "3" => Seq(
+
+      )
+    }),
 
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % Versions.Scalatest % Test,
@@ -84,8 +91,13 @@ object Anodi extends ProjectGroup("anodi") {
   lazy val root: Project = mkRootProject.dependsOn(macros)
 
   lazy val macros: Project = mkSubProject.settings(
-    libraryDependencies ++= Seq(
-      "org.scala-lang" % "scala-reflect" % scalaVersion.value,
-    ),
+    libraryDependencies ++= (scalaBinaryVersion.value match {
+      case "2.13" => Seq(
+        "org.scala-lang" % "scala-reflect" % scalaVersion.value
+      )
+      case "3" => Seq(
+
+      )
+    }),
   )
 }
