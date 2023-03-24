@@ -13,8 +13,6 @@ case class SourceInfo(
   enclosingSymbolName: String,
 )
 
-object SourceInfo {
+object SourceInfo extends SourceInfoCompat {
   def apply()(implicit si: SourceInfo): SourceInfo = si
-
-  implicit def here: SourceInfo = macro macros.ComponentMacros.sourceInfo
 }
