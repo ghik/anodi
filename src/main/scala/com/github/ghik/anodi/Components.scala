@@ -236,13 +236,3 @@ object Component {
     Future.traverse(reverseGraph.keys)(doDestroy).map(_ => ())
   }
 }
-
-/**
- * A wrapper over [[Component]] that has an implicit conversion from arbitrary expression
- * of type T to [[AutoComponent]]. This is used when you need to accept a parameter that may contain other
- * component references.
- *
- * Using [[AutoComponent]] avoids explicit wrapping of expressions passed as that parameter
- * into [[Component]] (using `component` macro).
- */
-case class AutoComponent[+T](component: Component[T]) extends AnyVal

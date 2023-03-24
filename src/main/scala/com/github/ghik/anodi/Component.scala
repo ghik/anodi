@@ -68,25 +68,11 @@ trait Components extends ComponentsLowPrio {
     component.cached(cacheStorage, freshInfo)
   }
 
-  protected def reifyAllSingletons: List[Component[?]] = macro ComponentMacros.reifyAllSingletons
-
   // avoids divergent implicit expansion involving `inject`
   // this is not strictly necessary but makes compiler error messages nicer
   // i.e. the compiler will emit "could not find implicit value" instead of "divergent implicit expansion"
   implicit def ambiguousArbitraryComponent1[T]: Component[T] = null
   implicit def ambiguousArbitraryComponent2[T]: Component[T] = null
-
-  implicit def autoComponent[T](
-    definition: => T
-  )(implicit
-    sourceInfo: SourceInfo
-  ): AutoComponent[T] = macro ComponentMacros.autoComponent[T]
-
-  protected def noneComponent: Component[Option[Nothing]] =
-    singleton(None)
-
-  protected def sequenceOption[T](componentOpt: Option[Component[T]]): Component[Option[T]] =
-    componentOpt.map(c => component(Option(c.ref))).getOrElse(noneComponent)
 }
 trait ComponentsLowPrio {
   @compileTimeOnly("implicit Component[T] => implicit T inference only works inside code passed to component/singleton macro")
