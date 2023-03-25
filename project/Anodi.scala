@@ -1,7 +1,7 @@
 import com.github.ghik.sbt.nosbt.ProjectGroup
-import sbt.Keys._
-import sbt._
-import sbtghactions.GenerativePlugin.autoImport._
+import sbt.Keys.*
+import sbt.{Def, *}
+import sbtghactions.GenerativePlugin.autoImport.*
 import sbtghactions.{JavaSpec, RefPredicate}
 import sbtide.Keys.ideBasePackages
 
@@ -17,12 +17,9 @@ object Anodi extends ProjectGroup("anodi") {
     ),
   )
 
-  override def commonSettings: Seq[Def.Setting[_]] = Seq(
-    scalaVersion := crossScalaVersions.value.last,
+  override def buildSettings: Seq[Def.Setting[_]] = Seq(
     crossScalaVersions := Seq("2.13.10", "3.2.2"),
-    organization := "com.github.ghik",
-    homepage := Some(url("https://github.com/ghik/anodi")),
-    ideBasePackages := Seq("com.github.ghik.anodi"),
+    scalaVersion := crossScalaVersions.value.last,
 
     githubWorkflowTargetTags ++= Seq("v*"),
     githubWorkflowJavaVersions := Seq(JavaSpec.temurin("17")),
@@ -37,6 +34,12 @@ object Anodi extends ProjectGroup("anodi") {
         "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
       )
     )),
+  )
+
+  override def commonSettings: Seq[Def.Setting[_]] = Seq(
+    organization := "com.github.ghik",
+    homepage := Some(url("https://github.com/ghik/anodi")),
+    ideBasePackages := Seq("com.github.ghik.anodi"),
 
     projectInfo := ModuleInfo(
       nameFormal = "Anodi",
