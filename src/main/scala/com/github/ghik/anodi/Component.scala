@@ -28,9 +28,6 @@ case class ComponentInfo(
 object ComponentInfo {
   def apply(namePrefix: String, sourceInfo: SourceInfo): ComponentInfo =
     new ComponentInfo(namePrefix + sourceInfo.enclosingSymbolName, sourceInfo.filePath, sourceInfo.fileName, sourceInfo.line)
-
-  @compileTimeOnly("implicit ComponentInfo is only available inside code passed to component/singleton macro")
-  implicit def info: ComponentInfo = sys.error("stub")
 }
 
 /**
