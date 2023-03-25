@@ -91,7 +91,9 @@ object Anodi extends ProjectGroup("anodi") {
     Compile / doc / sources := Seq.empty,
   )
 
-  lazy val root: Project = mkRootProject.dependsOn(macros)
+  lazy val root: Project = mkRootProject
+    .aggregate(macros)
+    .dependsOn(macros)
 
   lazy val macros: Project = mkSubProject.settings(
     libraryDependencies ++= (scalaBinaryVersion.value match {
