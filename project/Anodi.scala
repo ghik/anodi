@@ -10,14 +10,14 @@ object Anodi extends ProjectGroup("anodi") {
     final val Scalatest = "3.2.15"
   }
 
-  override def globalSettings: Seq[Def.Setting[_]] = Seq(
+  override def globalSettings: Seq[Def.Setting[?]] = Seq(
     excludeLintKeys ++= Set(
       ideBasePackages,
       projectInfo,
     ),
   )
 
-  override def buildSettings: Seq[Def.Setting[_]] = Seq(
+  override def buildSettings: Seq[Def.Setting[?]] = Seq(
     crossScalaVersions := Seq("2.13.10", "3.2.2"),
     scalaVersion := crossScalaVersions.value.last,
 
@@ -36,7 +36,7 @@ object Anodi extends ProjectGroup("anodi") {
     )),
   )
 
-  override def commonSettings: Seq[Def.Setting[_]] = Seq(
+  override def commonSettings: Seq[Def.Setting[?]] = Seq(
     organization := "com.github.ghik",
     homepage := Some(url("https://github.com/ghik/anodi")),
     ideBasePackages := Seq("com.github.ghik.anodi"),
