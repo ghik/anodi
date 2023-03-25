@@ -86,7 +86,9 @@ object Anodi extends ProjectGroup("anodi") {
 
     libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % Versions.Scalatest % Test,
-    )
+    ),
+
+    Compile / doc / sources := Seq.empty,
   )
 
   lazy val root: Project = mkRootProject.dependsOn(macros)
