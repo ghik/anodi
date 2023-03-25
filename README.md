@@ -1,7 +1,7 @@
 # (Almost no) Dependency Injection for Scala
 
 `anodi` is a Scala micro library for initialization of application components ("beans")
-and dependency injection. This framework can be summarized as "lazy vals on steroids" and features:
+and dependency injection. It can be summarized as "lazy vals on steroids" and features:
 
 * defining application components in plain Scala (e.g. constructor invocations)
 * automatic resolution of dependency graph and initialization order
