@@ -24,7 +24,7 @@ trait ComponentsCompat:
     asyncComponent(implicit ctx => Future(definition))
 
   inline def asyncComponent[T](inline definition: ExecutionContext => Future[T])(using SourceInfo): Component[T] =
-    ${ComponentsCompat.mkComponent('{this}, '{definition}, '{summon[SourceInfo]})}
+    ${ComponentsCompat.mkComponent('{this}, '{definition}, '{SourceInfo()})}
 
   inline given inject[T](using component: Component[T]): T = component.ref
 
@@ -53,7 +53,7 @@ object ComponentsCompat:
 
     '{new Component[T](
       $components.cinfo($sourceInfo),
-      IndexedSeq(${Expr.ofSeq(depTrees.result())}*),
+      ArraySeq(${Expr.ofSeq(depTrees.result())}*),
       $creator,
     )}
   end mkComponent
