@@ -78,9 +78,7 @@ object Anodi extends ProjectGroup("anodi") {
         "-Xsource:3",
         "-Yrangepos",
       )
-      case "3" => Seq(
-
-      )
+      case "3" => Seq()
     }),
 
     libraryDependencies ++= Seq(
@@ -95,9 +93,7 @@ object Anodi extends ProjectGroup("anodi") {
       case "2.13" => Seq(
         "org.scala-lang" % "scala-reflect" % scalaVersion.value
       )
-      case "3" => Seq(
-
-      )
+      case "3" => Seq()
     }),
   )
 }
