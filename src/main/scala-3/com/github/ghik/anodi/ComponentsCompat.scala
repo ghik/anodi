@@ -26,7 +26,7 @@ trait ComponentsCompat:
   inline def asyncComponent[T](inline definition: ExecutionContext => Future[T])(using SourceInfo): Component[T] =
     ${ComponentsCompat.mkComponent('{this}, '{definition}, '{SourceInfo()})}
 
-  inline given inject[T](using component: Component[T]): T = component.ref
+  inline given inject[T](using inline component: Component[T]): T = component.ref
 
 end ComponentsCompat
 
