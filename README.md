@@ -48,11 +48,11 @@ class Server(database: Database) {
 }
 
 object MyApp extends Components {
-  val server: Component[Server] = 
-    component(new Server(database.ref))
+  def server: Component[Server] =
+    singleton(new Server(database.ref))
 
-  val database: Component[Database] =
-    component(new Database)
+  def database: Component[Database] =
+    singleton(new Database)
     
   def main(args: Array[String]): Unit = {
     // use appropriate execution context of your choice for application initialization
@@ -111,12 +111,12 @@ class FtpServer
 class FullApplication(ui: UiServer, api: ApiServer, ftp: FtpServer)
 
 object MyApp extends Components {
-  val ui: Component[UiServer] = component(new UiServer)
-  val api: Component[ApiServer] = component(new ApiServer)
-  val ftp: Component[FtpServer] = component(new FtpServer)
+  def ui: Component[UiServer] = singleton(new UiServer)
+  def api: Component[ApiServer] = singleton(new ApiServer)
+  def ftp: Component[FtpServer] = singleton(new FtpServer)
   
-  val fullApplication: Component[FullApplication] =
-    component(new FullApplication(ui.ref, api.ref, ftp.ref))
+  def fullApplication: Component[FullApplication] =
+    singleton(new FullApplication(ui.ref, api.ref, ftp.ref))
 }
 ```
 
@@ -132,8 +132,8 @@ class Database
 class Server(db: Database)
 
 object MyApp extends Components {
-  val database: Component[Database] = component(new Database)
-  val server: Component[Server] = component(new Server(database.ref))
+  def database: Component[Database] = singleton(new Database)
+  def server: Component[Server] = singleton(new Server(database.ref))
 }
 ```
 
@@ -161,8 +161,8 @@ class Database
 class Server(implicit db: Database)
 
 object MyApp extends Components {
-  implicit val database: Component[Database] = component(new Database)
-  val server: Component[Server] = component(new Server))
+  implicit def database: Component[Database] = singleton(new Database)
+  def server: Component[Server] = singleton(new Server))
 }
 ```
 
