@@ -12,6 +12,7 @@ on:
     branches: ['**']
   push:
     branches: ['**']
+    tags: [v*]
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -23,7 +24,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [2.13.10, 3.2.2]
-        java: [temurin@11]
+        java: [temurin@17]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -31,12 +32,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java (temurin@11)
-        if: matrix.java == 'temurin@11'
+      - name: Setup Java (temurin@17)
+        if: matrix.java == 'temurin@17'
         uses: actions/setup-java@v2
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Cache sbt
         uses: actions/cache@v2
@@ -68,12 +69,12 @@ jobs:
   publish:
     name: Publish Artifacts
     needs: [build]
-    if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main')
+    if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v'))
     strategy:
       matrix:
         os: [ubuntu-latest]
         scala: [3.2.2]
-        java: [temurin@11]
+        java: [temurin@17]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -81,12 +82,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java (temurin@11)
-        if: matrix.java == 'temurin@11'
+      - name: Setup Java (temurin@17)
+        if: matrix.java == 'temurin@17'
         uses: actions/setup-java@v2
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 17
 
       - name: Cache sbt
         uses: actions/cache@v2
@@ -120,5 +121,9 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
-      - name: Publish project
-        run: sbt ++${{ matrix.scala }} +publish
+      - env:
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+        run: sbt ++${{ matrix.scala }} ci-release
