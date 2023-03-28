@@ -6,7 +6,7 @@ import scala.reflect.macros.blackbox
 
 class ComponentMacros(val c: blackbox.Context) {
 
-  import c.universe._
+  import c.universe.*
 
   def RootPkg = q"_root_"
   def ScalaPkg = q"$RootPkg.scala"
@@ -115,7 +115,7 @@ class ComponentMacros(val c: blackbox.Context) {
 
   private def ensureRangePositions(): Unit =
     if (!c.compilerSettings.contains("-Yrangepos")) {
-      c.abort(c.enclosingPosition, "Component related macros require -Yrangepos")
+      c.abort(c.enclosingPosition, "Component related macros require -Yrangepos compiler option")
     }
 
   def component[T: c.WeakTypeTag](definition: Tree)(sourceInfo: Tree): Tree = {
@@ -137,7 +137,33 @@ class ComponentMacros(val c: blackbox.Context) {
     ensureRangePositions()
     mkComponent(weakTypeOf[T], sourceInfo, definition, singleton = true, async = true)
   }
-  
+
+  def componentFromImplicits[T: c.WeakTypeTag]: Tree =
+    q"${c.prefix}.component(${mkFromImplicits(c.weakTypeOf[T])})"
+
+  def singletonFromImplicits[T: c.WeakTypeTag]: Tree =
+    q"${c.prefix}.singleton(${mkFromImplicits(c.weakTypeOf[T])})"
+
+  def fromImplicits[T: c.WeakTypeTag]: Tree =
+    mkFromImplicits(weakTypeOf[T])
+
+  private def mkFromImplicits(tpe: Type): Tree = {
+    val tsym = tpe.dealias.typeSymbol
+    if (!tsym.isClass || tsym.isAbstract) {
+      c.abort(c.enclosingPosition, s"$tpe cannot be constructed")
+    }
+
+    val cargs = tsym.asClass
+      .primaryConstructor
+      .typeSignatureIn(tpe)
+      .paramLists
+      .map(_.map { paramSym =>
+        q"implicitly[${paramSym.typeSignature.finalResultType}]"
+      })
+
+    q"new $tpe(...$cargs)"
+  }
+
   private final lazy val ownerChain = {
     val sym = c.typecheck(q"val ${c.freshName(TermName(""))} = null").symbol
     Iterator.iterate(sym)(_.owner).takeWhile(_ != NoSymbol).drop(1).toList

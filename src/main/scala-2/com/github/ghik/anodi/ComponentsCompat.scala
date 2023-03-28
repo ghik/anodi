@@ -49,13 +49,19 @@ trait ComponentsCompat extends ComponentsLowPrio { this: Components =>
     sourceInfo: SourceInfo
   ): Component[T] = macro ComponentMacros.asyncSingleton[T]
 
+  protected def singletonFromImplicits[T]: Component[T] = macro ComponentMacros.singletonFromImplicits[T]
+
+  protected def componentFromImplicits[T]: Component[T] = macro ComponentMacros.componentFromImplicits[T]
+
+  protected def fromImplicits[T]: T = macro ComponentMacros.fromImplicits[T]
+
   // avoids divergent implicit expansion involving `inject`
   // this is not strictly necessary but makes compiler error messages nicer
   // i.e. the compiler will emit "could not find implicit value" instead of "divergent implicit expansion"
-  implicit def ambiguousArbitraryComponent1[T]: Component[T] = null
-  implicit def ambiguousArbitraryComponent2[T]: Component[T] = null
+  protected implicit def ambiguousArbitraryComponent1[T]: Component[T] = null
+  protected implicit def ambiguousArbitraryComponent2[T]: Component[T] = null
 }
 trait ComponentsLowPrio { this: Components =>
   @compileTimeOnly("implicit Component[T] => implicit T inference only works inside code passed to component/singleton macro")
-  implicit def inject[T](implicit component: Component[T]): T = sys.error("stub")
+  protected implicit def inject[T](implicit component: Component[T]): T = sys.error("stub")
 }
