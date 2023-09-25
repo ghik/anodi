@@ -187,7 +187,7 @@ advantages:
 
 * dependency injection is handled for you by the compiler, using standard implicit search
 * implicit search is used **only** when explicitly requested using `fromImplicits`
-* constructor parameters do not need to be `implicit` so you avoid unintended consequences 
+* constructor parameters do not need to be `implicit`, so you avoid unintended consequences 
   of that (i.e. params being seen as implicits within the class body).
 
 ## Complete example
