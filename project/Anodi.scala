@@ -32,7 +32,7 @@ object Anodi extends ProjectGroup("anodi") {
         "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
         "SONATYPE_PASSWORD" -> "${{ secrets.SONATYPE_PASSWORD }}",
         "SONATYPE_USERNAME" -> "${{ secrets.SONATYPE_USERNAME }}"
-      )
+      ),
     )),
   )
 

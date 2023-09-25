@@ -166,6 +166,30 @@ object MyApp extends Components {
 }
 ```
 
+## Explicitly-declared implicit dependencies
+
+A middle ground between implicit and explicit dependencies is a situation where a component definition is
+declared as `implicit`/`given` but a dependency to that component is expressed with an _explicit_ parameter.
+This is how it looks in code:
+
+```scala
+class Database
+class Server(db: Database)
+
+object MyApp extends Components {
+  implicit def database: Component[Database] = singleton(new Database)
+  def server: Component[Server] = singleton(fromImplicits[Server])
+}
+```
+
+This is a nice sweet spot between fully implicit and fully explicit components that combines its
+advantages:
+
+* dependency injection is handled for you by the compiler, using standard implicit search
+* implicit search is used **only** when explicitly requested using `fromImplicits`
+* constructor parameters do not need to be `implicit` and avoid unintended consequences 
+  of that (i.e. params being seen as implicits within the class body).
+
 ## Complete example
 
 See [ComponentsExample.scala](https://github.com/ghik/anodi/blob/main/src/test/scala/com/github/ghik/anodi/ComponentsExample.scala)
