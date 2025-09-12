@@ -7,7 +7,7 @@ import sbtide.Keys.ideBasePackages
 
 object Anodi extends ProjectGroup("anodi") {
   object Versions {
-    final val Scalatest = "3.2.15"
+    final val Scalatest = "3.2.19"
   }
 
   override def globalSettings: Seq[Def.Setting[?]] = Seq(
@@ -18,7 +18,7 @@ object Anodi extends ProjectGroup("anodi") {
   )
 
   override def buildSettings: Seq[Def.Setting[?]] = Seq(
-    crossScalaVersions := Seq("2.13.10", "3.2.2"),
+    crossScalaVersions := Seq("2.13.16", "3.3.6"),
     scalaVersion := crossScalaVersions.value.last,
 
     githubWorkflowTargetTags ++= Seq("v*"),
